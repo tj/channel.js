@@ -17,6 +17,8 @@ module.exports = class Channel {
 
   /**
    * Send value, blocking unless there is room in the buffer.
+   *
+   * Calls to send() on a closed buffer will error.
    */
 
   send(value) {
@@ -41,9 +43,9 @@ module.exports = class Channel {
   }
 
   /**
-   * Receive returns a value, blocking until one is present,
-   * or returns undefined which can be used
-   * to determine when a channel has been closed.
+   * Receive returns a value or blocks until one is present.
+   *
+   * A recv() on a closed channel will return undefined.
    */
 
   recv() {
