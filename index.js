@@ -86,12 +86,4 @@ module.exports = class Channel {
     this.recvs = []
     recvs.forEach(p => p.resolve())
   }
-
-  /**
-   * Return the number of values in the buffer.
-   */
-
-  get length() {
-    return this.values.length
-  }
 }

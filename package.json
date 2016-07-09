@@ -14,7 +14,6 @@
     "co-sleep": "0.0.1",
     "mocha": "^2.5.3",
     "should": "^9.0.2",
-    "waitgroup": "github:tj/waitgroup.js",
-    "waitgroup.js": "github:tj/waitgroup.js"
+    "waitgroup": "github:tj/waitgroup.js"
   }
 }

@@ -78,6 +78,9 @@ describe('general', function() {
       yield ch.send('hello')
       ch.close()
 
+      const v = yield ch.recv()
+      assert(v === undefined)
+
       yield wg.wait()
       vals.should.eql(['hello', undefined, undefined])
     })
@@ -114,9 +117,8 @@ describe('unbuffered', function() {
   })
 })
 
-
 describe('buffered', function() {
-  it('should block send() until received', function() {
+  it('should block send() until buffer is full', function() {
     const ch = new Channel(5)
     let lastSent = false
 
