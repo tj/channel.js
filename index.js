@@ -1,4 +1,6 @@
 
+const Deferred = require('deferred')
+
 module.exports = class Channel {
 
   /**
@@ -22,24 +24,26 @@ module.exports = class Channel {
    */
 
   send(value) {
-    return new Promise((resolve, reject) => {
-      if (this.closed) return reject(new Error('send on closed channel'))
+    if (this.closed) {
+      return Promise.reject(new Error('send on closed channel'))
+    }
 
-      // recv pending
-      if (this.recvs.length) {
-        this.recvs.shift().resolve(value)
-        return resolve()
-      }
+    // recv pending
+    if (this.recvs.length) {
+      this.recvs.shift().resolve(value)
+      return Promise.resolve()
+    }
 
-      // room in buffer
-      if (this.values.length < this.capacity) {
-        this.values.push(value)
-        return resolve()
-      }
+    // room in buffer
+    if (this.values.length < this.capacity) {
+      this.values.push(value)
+      return Promise.resolve()
+    }
 
-      // no recv pending, block
-      this.sends.push({ value, resolve, reject })
-    })
+    // no recv pending, block
+    const promise = new Deferred
+    this.sends.push({ value, promise })
+    return promise
   }
 
   /**
@@ -49,28 +53,28 @@ module.exports = class Channel {
    */
 
   recv() {
-    return new Promise((resolve, reject) => {
-      // values in buffer
-      if (this.values.length) {
-        return resolve(this.values.shift())
-      }
+    // values in buffer
+    if (this.values.length) {
+      return Promise.resolve(this.values.shift())
+    }
 
-      // unblock pending sends
-      if (this.sends.length) {
-        const send = this.sends.shift()
-        if (this.closed) return send.reject(new Error('send on closed channel'))
-        send.resolve()
-        return resolve(send.value)
-      }
+    // unblock pending sends
+    if (this.sends.length) {
+      const send = this.sends.shift()
+      if (this.closed) return send.promise.reject(new Error('send on closed channel'))
+      send.promise.resolve()
+      return Promise.resolve(send.value)
+    }
 
-      // closed
-      if (this.closed) {
-        return resolve()
-      }
+    // closed
+    if (this.closed) {
+      return Promise.resolve()
+    }
 
-      // no values, block
-      this.recvs.push({ resolve, reject })
-    })
+    // no values, block
+    const promise = new Deferred
+    this.recvs.push(promise)
+    return promise
   }
 
   /**
