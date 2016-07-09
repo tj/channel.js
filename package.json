@@ -1,0 +1,18 @@
+{
+  "name": "channel",
+  "version": "0.0.1",
+  "description": "Go style channels",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --require should"
+  },
+  "author": "tj@vision-media.ca",
+  "license": "MIT",
+  "devDependencies": {
+    "axios": "^0.12.0",
+    "co": "^4.6.0",
+    "co-sleep": "0.0.1",
+    "mocha": "^2.5.3",
+    "should": "^9.0.2"
+  }
+}
