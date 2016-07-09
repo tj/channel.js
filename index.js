@@ -27,7 +27,7 @@ module.exports = class Channel {
 
       // recv pending
       if (this.recvs.length) {
-        this.recvs.pop().resolve(value)
+        this.recvs.shift().resolve(value)
         return resolve()
       }
 
@@ -52,12 +52,12 @@ module.exports = class Channel {
     return new Promise((resolve, reject) => {
       // values in buffer
       if (this.values.length) {
-        return resolve(this.values.pop())
+        return resolve(this.values.shift())
       }
 
       // unblock pending sends
       if (this.sends.length) {
-        const send = this.sends.pop()
+        const send = this.sends.shift()
         if (this.closed) return send.reject(new Error('send on closed channel'))
         send.resolve()
         return resolve(send.value)

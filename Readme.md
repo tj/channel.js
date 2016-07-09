@@ -1,7 +1,7 @@
 
 # Channel
 
-Simple Go-style `Channel` implementation. Others are available but this implementation tries to follow the Go semantics more closely, and is a pretty grok-able solution.
+Simple Go-style `Channel` implementation. Others are available but this implementation tries to follow the Go semantics more closely.
 
 ## Installation
 

@@ -118,9 +118,10 @@ describe('unbuffered', function() {
 })
 
 describe('buffered', function() {
-  it('should block send() until buffer is full', function() {
+  it('should block send() when the buffer is full', function() {
     const ch = new Channel(5)
-    let lastSent = false
+    const wg = new WaitGroup(1)
+    const vals = []
 
     co(function *(){
       yield ch.send('h')
@@ -128,19 +129,25 @@ describe('buffered', function() {
       yield ch.send('l')
       yield ch.send('l')
       yield ch.send('o')
-
+      wg.done()
       yield ch.send('!')
-      lastSent = true
+      ch.close()
+    })
+
+    co(function *(){
+
     })
 
     return co(function *(){
-      assert.equal(yield ch.recv(), 'h')
-      assert.equal(yield ch.recv(), 'e')
-      assert.equal(yield ch.recv(), 'l')
-      assert.equal(yield ch.recv(), 'l')
-      assert.equal(yield ch.recv(), 'o')
-      assert(!lastSent)
+      yield wg.wait()
+
+      for (var i = 0; i < 5; i++) {
+        vals.push(yield ch.recv())
+      }
+
+      vals.should.eql(['h', 'e', 'l', 'l', 'o'])
       assert.equal(yield ch.recv(), '!')
+      assert.equal(yield ch.recv(), undefined)
     })
   })
 })
