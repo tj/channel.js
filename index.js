@@ -74,7 +74,7 @@ module.exports = class Channel {
   }
 
   /**
-   * Close the channel.
+   * Close the channel. Any pending recv() calls will be unblocked.
    *
    * Subsequent close() calls will throw.
    */
@@ -82,6 +82,9 @@ module.exports = class Channel {
   close() {
     if (this.closed) throw new Error('channel already closed')
     this.closed = true
+    const recvs = this.recvs
+    this.recvs = []
+    recvs.forEach(p => p.resolve())
   }
 
   /**

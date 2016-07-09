@@ -1,4 +1,5 @@
 
+const WaitGroup = require('waitgroup')
 const assert = require('assert')
 const Channel = require('..')
 const co = require('co')
@@ -48,6 +49,37 @@ describe('general', function() {
 
       const b = yield ch.recv()
       assert(b === undefined)
+    })
+  })
+
+  it('should unblock recv()s on close()', function() {
+    const wg = new WaitGroup(2)
+    const ch = new Channel
+    const vals = []
+
+    co(function *(){
+      const v = yield ch.recv()
+      vals.push(v)
+    })
+
+    co(function *(){
+      const v = yield ch.recv()
+      vals.push(v)
+      wg.done()
+    })
+
+    co(function *(){
+      const v = yield ch.recv()
+      vals.push(v)
+      wg.done()
+    })
+
+    return co(function *(){
+      yield ch.send('hello')
+      ch.close()
+
+      yield wg.wait()
+      vals.should.eql(['hello', undefined, undefined])
     })
   })
 })
