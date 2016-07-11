@@ -27,4 +27,5 @@ function *worker(i) {
     yield sleep(Math.random() * 15 | 0)
     yield ch.send(`level=info worker=${i} message="something here ${j}"`)
   }
+  ch.close()
 }
