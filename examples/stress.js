@@ -1,5 +1,4 @@
 
-const axios = require('axios')
 const Channel = require('..')
 const co = require('co')
 
