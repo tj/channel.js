@@ -61,7 +61,12 @@ module.exports = class Channel {
     // unblock pending sends
     if (this.sends.length) {
       const send = this.sends.shift()
-      if (this.closed) return send.promise.reject(new Error('send on closed channel'))
+
+      if (this.closed) {
+        send.promise.reject(new Error('send on closed channel'))
+        return Promise.resolve()
+      }
+
       send.promise.resolve()
       return Promise.resolve(send.value)
     }
