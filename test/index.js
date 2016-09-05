@@ -41,6 +41,14 @@ describe('general', function() {
   it('should recv() undefined after close()', function() {
     const ch = new Channel
 
+    co(function *(){
+      try {
+        yield ch.send('hello')
+      } catch (err) {
+        err.message.should.equal('send on closed channel')
+      }
+    })
+
     return co(function *(){
       ch.close()
 
